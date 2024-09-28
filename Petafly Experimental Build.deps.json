@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Petafly Experimental Build/1.0.0": {
+        "runtime": {
+          "Petafly Experimental Build.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Petafly Experimental Build/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
