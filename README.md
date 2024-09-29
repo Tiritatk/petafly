@@ -16,4 +16,5 @@ Release Notes:
 <div align="left">
 <p>
 - PublicExperimentalTest 1: Base Program, There's no English Support for now, poor interface, Ngrok not configured so only file transfers through the same Wi-Fi from any to any device.
+- - PublicExperimentalTest 2: Bugfix Version: Fixed a lot of bugs related with interface, colors, and make everything easier for the final user, Ngrok will be added when everything else is finished.
 </p>
