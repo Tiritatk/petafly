@@ -73,9 +73,17 @@ namespace PetaFlyApp
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("1. Crear nueva carpeta compartida");
                 Console.WriteLine("2. Abrir servidor HTTP en un directorio existente");
-                Console.WriteLine("3. Gestionar carpetas compartidas");
-                Console.WriteLine("4. Añadir archivo a carpeta existente");
-                Console.WriteLine("5. Salir");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("3. Hacer Port Forwarding con Ngrok a un Servidor HTTP Abierto");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("4. Gestionar carpetas compartidas");
+                // BORRAR COMENTARIO: MOVER PUNTO 5 DENTRO DE 4. GESTIONAR CARPETAS COMPARTIDAS COMO UNA OPCION MAS
+                Console.WriteLine("5. Añadir archivo a carpeta existente");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("6. Ajustes");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("7. Salir");
+                Console.WriteLine();
                 Console.Write("Selecciona una opción: ");
 
                 string option = Console.ReadLine();
@@ -92,15 +100,22 @@ namespace PetaFlyApp
                         break;
                     case "3":
                         Console.Clear();
-                        ManageSharedFolders();
+                        NgrokPortForwarding();
                         break;
                     case "4":
                         Console.Clear();
-                        AddFileToExistingFolder();
+                        ManageSharedFolders();
                         break;
                     case "5":
                         Console.Clear();
-
+                        AddFileToExistingFolder();
+                        break;
+                    case "6":
+                        Console.Clear();
+                        Settings();
+                        break;
+                    case "7":
+                        Console.Clear();
                         return; // Salir del programa
                     default:
                         Console.Clear();
@@ -213,8 +228,11 @@ namespace PetaFlyApp
             }
         }
 
+        static int port = 80; // Puerto inicial
+
         static void OpenExistingHttpServer()
         {
+            string httpBanner = " █████   █████ ███████████ ███████████ ███████████ \n░░███   ░░███ ░█░░░███░░░█░█░░░███░░░█░░███░░░░░███\n ░███    ░███ ░   ░███  ░ ░   ░███  ░  ░███    ░███\n ░███████████     ░███        ░███     ░██████████ \n ░███░░░░░███     ░███        ░███     ░███░░░░░░  \n ░███    ░███     ░███        ░███     ░███        \n █████   █████    █████       █████    █████       \n░░░░░   ░░░░░    ░░░░░       ░░░░░    ░░░░░        ";
             string rootDirectory = Path.Combine(Environment.CurrentDirectory, "dir");
             string[] directories = Directory.GetDirectories(rootDirectory);
 
@@ -228,19 +246,42 @@ namespace PetaFlyApp
             }
 
             // Listar directorios existentes
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine($"{httpBanner}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine() ;
             Console.WriteLine("Directorio(s) existente(s):");
+            Console.WriteLine();
             for (int i = 0; i < directories.Length; i++)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"{i + 1}. {Path.GetFileName(directories[i])}");
+                Console.ForegroundColor = ConsoleColor.White;
             }
 
             // Seleccionar el directorio para abrir el servidor
+            Console.WriteLine();
             Console.Write("Selecciona el número del directorio donde deseas abrir el servidor: ");
             if (int.TryParse(Console.ReadLine(), out int selectedFolderIndex) && selectedFolderIndex > 0 && selectedFolderIndex <= directories.Length)
             {
                 string selectedFolderPath = directories[selectedFolderIndex - 1];
-                StartPythonHttpServer(selectedFolderPath);
-                Console.WriteLine("El servidor HTTP se ha abierto correctamente.");
+                StartPythonHttpServer(selectedFolderPath, port);
+
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"El servidor HTTP se ha abierto correctamente en el puerto {port}.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine();
+
+                // Ajustar el puerto para el siguiente servidor
+                if (port == 80)
+                {
+                    port = 8000;
+                }
+                else
+                {
+                    port++;
+                }
             }
             else
             {
@@ -248,12 +289,41 @@ namespace PetaFlyApp
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");
                 Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
+        static void StartPythonHttpServer(string folderPath, int port)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "python",
+                Arguments = $"-m http.server {port}",  // Pasar el puerto dinámicamente
+                WorkingDirectory = folderPath,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
 
+            Process process = new Process
+            {
+                StartInfo = psi
+            };
+
+            process.Start();
+        }
+
+        static void NgrokPortForwarding()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Ngrok aun no esta disponible en Petafly, solo esta disponible la transferencia de archivos dentro de una misma wifi.");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
+        }
         static void ManageSharedFolders()
         {
-            string SharedFoldersBanner = " ███████████          ████      █████                           \n░░███░░░░░░█         ░░███     ░░███                            \n ░███   █ ░   ██████  ░███   ███████   ██████  ████████   █████ \n ░███████    ███░░███ ░███  ███░░███  ███░░███░░███░░███ ███░░  \n ░███░░░█   ░███ ░███ ░███ ░███ ░███ ░███████  ░███ ░░░ ░░█████ \n ░███  ░    ░███ ░███ ░███ ░███ ░███ ░███░░░   ░███      ░░░░███\n █████      ░░██████  █████░░████████░░██████  █████     ██████ \n░░░░░        ░░░░░░  ░░░░░  ░░░░░░░░  ░░░░░░  ░░░░░     ░░░░░░  ";
+            string SharedFoldersBanner = " ███████████          ████      █████                           \n░░███░░░░░░█         ░░███     ░░███                            \n ░███   █ ░   ██████  ░███   ███████   ██████  ████████   █████ \n ░███████    ███░░███ ░███  ███░░███  ███░░███░░███░░███ ███░░  \n ░███░░░█   ░███ ░███ ░███ ░███ ░███ ░███████  ░███ ░░░ ░░█████ \n ░███  ░    ░███ ░███ ░███ ░███ ░███ ░███░░░   ░███      ░░░░███\n █████      ░░██████  █████░░████████░░██████  █████     ██████ \n░░░░░        ░░░░░░  ░░░░░  ░░░░░░░░  ░░░░░░  ░░░░░     ░░░░░░  \n\n";
             while (true)
             {
                 Console.WriteLine($"{SharedFoldersBanner}");
@@ -265,6 +335,7 @@ namespace PetaFlyApp
                 Console.WriteLine("3. Eliminar carpeta");
                 Console.WriteLine("4. Listar todos los archivos en todas las carpetas");
                 Console.WriteLine("5. Volver al menú principal");
+                Console.WriteLine();
                 Console.Write("Selecciona una opción: ");
 
                 string option = Console.ReadLine();
@@ -312,7 +383,10 @@ namespace PetaFlyApp
 
             if (directories.Length == 0)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("No hay directorios creados. Por favor, selecciona la opción '1' en el menú para crear un directorio primero.");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
                 return;
             }
 
@@ -369,7 +443,14 @@ namespace PetaFlyApp
                 AddFileToExistingFolder();
             }
         }
-
+        static void Settings()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Los ajustes generales aún no estan disponibles en Petafly, solo esta disponible la gestion de carpetas compartidas");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
+        }
         static void StartPythonHttpServer(string defaultPath)
         {
             ProcessStartInfo processStartInfo = new ProcessStartInfo
@@ -398,7 +479,10 @@ namespace PetaFlyApp
             string[] directories = Directory.GetDirectories(rootDirectory);
             for (int i = 0; i < directories.Length; i++)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"{i + 1}. {Path.GetFileName(directories[i])}");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine();
             }
         }
 
@@ -427,14 +511,17 @@ namespace PetaFlyApp
             {
                 string currentFolderPath = directories[selectedFolderIndex - 1];
                 string currentFolderName = Path.GetFileName(currentFolderPath);
-
                 Console.Write("Introduce el nuevo nombre para la carpeta: ");
                 string newFolderName = Console.ReadLine();
                 string newFolderPath = Path.Combine(rootDirectory, newFolderName);
 
                 // Renombrar carpeta
                 Directory.Move(currentFolderPath, newFolderPath);
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Carpeta renombrada de {currentFolderName} a {newFolderName}.");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
             }
             else
             {
@@ -476,11 +563,18 @@ namespace PetaFlyApp
                     string destinationFolderPath = directories[destinationFolderIndex - 1];
 
                     // Listar archivos en la carpeta de origen
+                    Console.WriteLine();
                     Console.WriteLine("Archivos disponibles en la carpeta de origen:");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     string[] files = Directory.GetFiles(sourceFolderPath);
+                    Console.ForegroundColor = ConsoleColor.White;
                     if (files.Length == 0)
                     {
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("No hay archivos disponibles en la carpeta de origen.");
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.White;
                         return; // Salir si no hay archivos
                     }
 
@@ -502,17 +596,29 @@ namespace PetaFlyApp
                     }
                     else
                     {
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Selección no válida para la carpeta de destino.");
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             else
             {
-                Console.WriteLine("Selección no válida para la carpeta de origen.");
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
 
@@ -539,11 +645,19 @@ namespace PetaFlyApp
             {
                 string folderToDelete = directories[selectedFolderIndex - 1];
                 Directory.Delete(folderToDelete, true); // Eliminar la carpeta y su contenido
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Carpeta eliminada correctamente.");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
             }
             else
             {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
 
@@ -562,8 +676,12 @@ namespace PetaFlyApp
                 Console.ForegroundColor= ConsoleColor.White;
                 return;
             }
-
-            Console.WriteLine("\n--- Listado de Todos los Archivos en Todas las Carpetas ---");
+            
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine();
+            Console.WriteLine("--- Listado de Todos los Archivos en Todas las Carpetas ---");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
 
             foreach (string dir in directories)
             {
@@ -573,18 +691,27 @@ namespace PetaFlyApp
                 {
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine("  (Sin archivos)");
+                    Console.WriteLine() ;
                     Console.ForegroundColor = ConsoleColor.White;
                 }
+
                 else
                 {
                     foreach (string file in files)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine($"  - {Path.GetFileName(file)}");
+                        Console.WriteLine();
                         Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
             }
+            Console.WriteLine();
+
+            // Pausa para que el usuario presione Enter antes de continuar
+            Console.WriteLine("Presiona Enter para continuar...");
+            Console.ReadLine();
+            Console.Clear();
         }
     }
 }
