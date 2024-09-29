@@ -1,7 +1,11 @@
 @echo off
+
 title Instalador de Dependencias PetaFly
 
 :: Crear directorios si no existen
+color 03
+echo NO CIERRES ESTA CONSOLA (Para asegurarse correctamente de que tienes todos los requisitos se abriran los instaladores de los programas, en orden cuando pulses enter)
+echo.
 echo Verificando Integridad de los Archivos de Petafly...
 echo.
 set "DATA_DIR=%~dp0.DATA\memory"
