@@ -15,6 +15,7 @@ Release Notes:
   
 <div align="left">
 <p>
-- PublicExperimentalTest 1: Base Program, There's no English Support for now, poor interface, Ngrok not configured so only file transfers through the same Wi-Fi from any to any device.<p>
-- PublicExperimentalTest 2: Bugfix Version: Fixed a lot of bugs related with interface, colors, and make everything easier for the final user, Ngrok will be added when everything else is finished.
+<b>- PublicExperimentalTest 1:</b> Base Program, There's no English Support for now, poor interface, Ngrok not configured so only file transfers through the same Wi-Fi from any to any device.<p>
+<b>- PublicExperimentalTest 2:</b> Bugfix Version: Fixed a lot of bugs related with interface, colors, and make everything easier for the final user, Ngrok will be added when everything else is finished.<p> 
+<b>- PublicExperimentalTest 3:</b> I fixed almost every color or interface bug that made hard for the user to understand what's happening because of so much text accumulating on screen. Fixed a bug when opening more than one port, because default port is 80, and the console opened 80 all the time causing a glitch. Now when you open 2 or more HTTP Servers, the first port will be 80, then 8000, and after this just +1 every time (8000, 8001, 8002, 8003, 8004...) Fixed several exceptions that made the program crash in certain situations without giving an error, confusing the user, and I'm starting to prepare a stable version for testing purposes that doesn't update every time i make a change.
 </p>
