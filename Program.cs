@@ -1,4 +1,5 @@
-﻿using System;
+using Microsoft.VisualBasic;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -9,7 +10,7 @@ namespace PetaFlyApp
         static void Main(string[] args)
         {
             string ReleaseDate = "September 2024";
-            string ReleaseVersion = "PublicExperimentalTest 1";
+            string ReleaseVersion = "P.E.T 2";
             string baseDir = AppDomain.CurrentDomain.BaseDirectory; // Ruta base del programa
             string dependenciesFilePath = Path.Combine(baseDir, ".DATA", "memory", "pfly_dependencies_installed.txt");
             string batFilePath = Path.Combine(baseDir, "InstallDependencies.bat");
@@ -29,42 +30,48 @@ namespace PetaFlyApp
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine($"{ReleaseDate}");
             Console.WriteLine();
+            Console.Title = $"Petafly - {ReleaseVersion}, {ReleaseDate}";
 
-            string userName = Environment.UserName;
-
-            Console.ForegroundColor= ConsoleColor.Blue;
-            Console.WriteLine(" ███████████            █████                 ██████  ████            ");
-            Console.WriteLine("░░███░░░░░███          ░░███                 ███░░███░░███            ");
-            Console.WriteLine(" ░███    ░███  ██████  ███████    ██████    ░███ ░░░  ░███  █████ ████");
-            Console.WriteLine(" ░██████████  ███░░███░░░███░    ░░░░░███  ███████    ░███ ░░███ ░███ ");
-            Console.WriteLine(" ░███░░░░░░  ░███████   ░███      ███████ ░░░███░     ░███  ░███ ░███ ");
-            Console.WriteLine(" ░███        ░███░░░    ░███ ███ ███░░███   ░███      ░███  ░███ ░███ ");
-            Console.WriteLine(" █████       ░░██████   ░░█████ ░░████████  █████     █████ ░░███████ ");
-            Console.WriteLine("░░░░░         ░░░░░░     ░░░░░   ░░░░░░░░  ░░░░░     ░░░░░   ░░░░░███ ");
-            Console.WriteLine("                                                             ███ ░███ ");
-            Console.WriteLine("                                                            ░░██████  ");
-            Console.WriteLine("                                                             ░░░░░░   ");
-
-            // Establecer color por defecto de la Consola
-            Console.ForegroundColor = ConsoleColor.White;
-
-            // Frase antes del nombre del usuario con otro color
-            Console.Write($"Hola, ");
-
-            // Cambio de color para el nombre del usuario
-            Console.ForegroundColor= ConsoleColor.Yellow;
-            Console.Write($"{userName}");
-
-            // Vuelta al color normal
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("! Bienvenido a Petafly.\n");
-
+                string userName = Environment.UserName;
 
             while (true)
             {
                 // Mostrar el menú principal
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(" ███████████            █████                 ██████  ████            ");
+                Console.WriteLine("░░███░░░░░███          ░░███                 ███░░███░░███            ");
+                Console.WriteLine(" ░███    ░███  ██████  ███████    ██████    ░███ ░░░  ░███  █████ ████");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine(" ░██████████  ███░░███░░░███░    ░░░░░███  ███████    ░███ ░░███ ░███ ");
+                Console.WriteLine(" ░███░░░░░░  ░███████   ░███      ███████ ░░░███░     ░███  ░███ ░███            Developed by Tiritatk");
+                Console.WriteLine(" ░███        ░███░░░    ░███ ███ ███░░███   ░███      ░███  ░███ ░███            Available in MultiTask by SergiXY_");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(" █████       ░░██████   ░░█████ ░░████████  █████     █████ ░░███████ ");
+                Console.WriteLine("░░░░░         ░░░░░░     ░░░░░   ░░░░░░░░  ░░░░░     ░░░░░   ░░░░░███            https://github.com/Tiritatk/petafly");
+                Console.WriteLine("                                                             ███ ░███ ");
+                Console.WriteLine("                         Spanish Theme (Future Update?)     ░░██████  ");
+                Console.WriteLine("                                                             ░░░░░░   ");
+
+                // Establecer color por defecto de la Consola
+                Console.ForegroundColor = ConsoleColor.White;
+                
+                // Frase antes del nombre del usuario con otro color
+                Console.Write($"Hola, ");
+                
+                // Cambio de color para el nombre del usuario
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write($"{userName}");
+
+
+                // Vuelta al color normal
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("! Bienvenido a Petafly.\n");
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("\n--- Menú de Inicio ---");
-                Console.WriteLine("1. Crear un nuevo directorio para compartir");
+
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("1. Crear nueva carpeta compartida");
                 Console.WriteLine("2. Abrir servidor HTTP en un directorio existente");
                 Console.WriteLine("3. Gestionar carpetas compartidas");
                 Console.WriteLine("4. Añadir archivo a carpeta existente");
@@ -76,21 +83,31 @@ namespace PetaFlyApp
                 switch (option)
                 {
                     case "1":
+                        Console.Clear();
                         CreateDirectoryForSharing();
                         break;
                     case "2":
+                        Console.Clear();
                         OpenExistingHttpServer();
                         break;
                     case "3":
+                        Console.Clear();
                         ManageSharedFolders();
                         break;
                     case "4":
+                        Console.Clear();
                         AddFileToExistingFolder();
                         break;
                     case "5":
+                        Console.Clear();
+
                         return; // Salir del programa
                     default:
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Opción no válida. Por favor, selecciona una opción del menú.");
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.White;
                         break;
                 }
             }
@@ -113,8 +130,9 @@ namespace PetaFlyApp
                 Console.WriteLine("Error al ejecutar el archivo BAT: " + ex.Message);
             }
         }
-static void CreateDirectoryForSharing()
+        static void CreateDirectoryForSharing()
         {
+            string PetaflyBanner = " ███████████            █████                 ██████  ████            \n░░███░░░░░███          ░░███                 ███░░███░░███            \n ░███    ░███  ██████  ███████    ██████    ░███ ░░░  ░███  █████ ████\n ░██████████  ███░░███░░░███░    ░░░░░███  ███████    ░███ ░░███ ░███ \n ░███░░░░░░  ░███████   ░███      ███████ ░░░███░     ░███  ░███ ░███ \n ░███        ░███░░░    ░███ ███ ███░░███   ░███      ░███  ░███ ░███ \n █████       ░░██████   ░░█████ ░░████████  █████     █████ ░░███████ \n░░░░░         ░░░░░░     ░░░░░   ░░░░░░░░  ░░░░░     ░░░░░   ░░░░░███ \n                                                             ███ ░███ \n                                                            ░░██████  \n\n";
             string rootDirectory = Path.Combine(Environment.CurrentDirectory, "dir"); // Carpeta "dir"
             Directory.CreateDirectory(rootDirectory); // Asegurarse de que la carpeta "dir" existe
             string newDirectoryName = "shared_files"; // Comenzar desde "shared_files"
@@ -130,7 +148,11 @@ static void CreateDirectoryForSharing()
             newDirectoryName += counter;
             string newDirectoryPath = Path.Combine(rootDirectory, newDirectoryName);
             Directory.CreateDirectory(newDirectoryPath);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"{PetaflyBanner}");
             Console.WriteLine($"Directorio creado: {newDirectoryPath}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Thread.Sleep(500);
 
             // Seleccionar archivo para compartir
             Console.WriteLine("Introduce la ruta del archivo que deseas compartir (puedes arrastrar el archivo a esta ventana):");
@@ -143,7 +165,10 @@ static void CreateDirectoryForSharing()
                 try
                 {
                     File.Copy(filePath, destFile, true);
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"Archivo copiado a {destFile}");
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
                 catch (Exception ex)
                 {
@@ -152,7 +177,10 @@ static void CreateDirectoryForSharing()
             }
             else
             {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"El archivo {filePath} no existe.");
+                Console.WriteLine();
                 return; // Terminar si el archivo no existe
             }
 
@@ -164,14 +192,19 @@ static void CreateDirectoryForSharing()
             {
                 // Ejecutar el servidor Python en una nueva consola
                 StartPythonHttpServer(newDirectoryPath);
+                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("El servidor HTTP se ha abierto correctamente.");
+                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.White;
+
             }
             else
             {
+                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("El servidor HTTP no se ha iniciado. Puedes abrirlo más tarde desde el menú.");
+                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.White;
             }
         }
@@ -204,15 +237,22 @@ static void CreateDirectoryForSharing()
             }
             else
             {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");
+                Console.WriteLine();
             }
         }
 
         static void ManageSharedFolders()
         {
+            string SharedFoldersBanner = " ███████████          ████      █████                           \n░░███░░░░░░█         ░░███     ░░███                            \n ░███   █ ░   ██████  ░███   ███████   ██████  ████████   █████ \n ░███████    ███░░███ ░███  ███░░███  ███░░███░░███░░███ ███░░  \n ░███░░░█   ░███ ░███ ░███ ░███ ░███ ░███████  ░███ ░░░ ░░█████ \n ░███  ░    ░███ ░███ ░███ ░███ ░███ ░███░░░   ░███      ░░░░███\n █████      ░░██████  █████░░████████░░██████  █████     ██████ \n░░░░░        ░░░░░░  ░░░░░  ░░░░░░░░  ░░░░░░  ░░░░░     ░░░░░░  ";
             while (true)
             {
+                Console.WriteLine($"{SharedFoldersBanner}");
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("\n--- Gestión de Carpetas Compartidas ---");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("1. Renombrar carpeta");
                 Console.WriteLine("2. Mover archivo entre carpetas");
                 Console.WriteLine("3. Eliminar carpeta");
@@ -237,9 +277,14 @@ static void CreateDirectoryForSharing()
                         ListAllFilesInSharedFolders();
                         break;
                     case "5":
+                        Console.Clear();
                         return; // Volver al menú principal
                     default:
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Opción no válida. Por favor, selecciona una opción del menú.");
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.White;
                         break;
                 }
             }
@@ -260,10 +305,14 @@ static void CreateDirectoryForSharing()
             Console.WriteLine("Directorio(s) existente(s):");
             for (int i = 0; i < directories.Length; i++)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"{i + 1}. {Path.GetFileName(directories[i])}");
+                Console.ForegroundColor = ConsoleColor.White;
             }
 
             // Seleccionar el directorio para añadir el archivo
+
+            Console.WriteLine();
             Console.Write("Selecciona el número del directorio donde deseas añadir un archivo: ");
             if (int.TryParse(Console.ReadLine(), out int selectedFolderIndex) && selectedFolderIndex > 0 && selectedFolderIndex <= directories.Length)
             {
@@ -280,7 +329,10 @@ static void CreateDirectoryForSharing()
                     try
                     {
                         File.Copy(filePath, destFile, true);
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"Archivo añadido a {destFile}");
+                        Console.WriteLine();
                     }
                     catch (Exception ex)
                     {
@@ -294,7 +346,12 @@ static void CreateDirectoryForSharing()
             }
             else
             {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                AddFileToExistingFolder();
             }
         }
 
@@ -437,13 +494,17 @@ static void CreateDirectoryForSharing()
                 string[] files = Directory.GetFiles(dir);
                 if (files.Length == 0)
                 {
+                    Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine("  (Sin archivos)");
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
                 else
                 {
                     foreach (string file in files)
                     {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine($"  - {Path.GetFileName(file)}");
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
             }
