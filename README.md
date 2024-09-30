@@ -14,7 +14,11 @@ Installation Tutorial:
 </h2>
 <div align="justify">
 Coming Soon...
-  
+But <p></p>
+<a href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-8.0.8-windows-x64-installer?cid=getdotnetcore">Install .NET from here:</a><p></p>
+<a href="https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe">Install Python from here:</a><p></p>
+<a href="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip">Install Ngrok from here:</a>
+
 <div align="center">
 <h2>
 Release Notes:
