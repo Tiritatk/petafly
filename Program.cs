@@ -9,24 +9,10 @@ namespace PetaFlyApp
     {
         static void Main(string[] args)
         {
-            string ReleaseDate = "September 2024";
-            string ReleaseVersion = "P.E.T 3";
+            string ReleaseDate = "October 2024";
+            string ReleaseVersion = "0.0.4";
             string baseDir = AppDomain.CurrentDomain.BaseDirectory; // Ruta base del programa
-            string dependenciesFilePath = Path.Combine(baseDir, ".DATA", "memory", "pfly_dependencies_installed.txt");
-            string batFilePath = Path.Combine(baseDir, "InstallDependencies.bat");
 
-            // Verificar si el archivo de dependencias existe
-            if (!File.Exists(dependenciesFilePath))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{ReleaseVersion} - Dependencias no instaladas. Ejecutando el script de instalación...");
-                RunBatFile(batFilePath);
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{ReleaseVersion} - Dependencias ya instaladas.");
-            }
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine($"{ReleaseDate}");
             Console.WriteLine();
@@ -37,19 +23,27 @@ namespace PetaFlyApp
             while (true)
             {
                 // Mostrar el menú principal
-                Console.ForegroundColor = ConsoleColor.DarkBlue;
-                Console.WriteLine(" ███████████            █████                 ██████  ████            ");
-                Console.WriteLine("░░███░░░░░███          ░░███                 ███░░███░░███            ");
-                Console.WriteLine(" ░███    ░███  ██████  ███████    ██████    ░███ ░░░  ░███  █████ ████");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine(" ░██████████  ███░░███░░░███░    ░░░░░███  ███████    ░███ ░░███ ░███ ");
-                Console.WriteLine(" ░███░░░░░░  ░███████   ░███      ███████ ░░░███░     ░███  ░███ ░███            Developed by Tiritatk");
-                Console.WriteLine(" ░███        ░███░░░    ░███ ███ ███░░███   ░███      ░███  ░███ ░███            Available in MultiTask by SergiXY_");
+                Console.WriteLine(" ███████████            █████                 ██████  ████            ");
                 Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("░░███░░░░░███          ░░███                 ███░░███░░███            ");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine(" ░███    ░███  ██████  ███████    ██████    ░███ ░░░  ░███  █████ ████");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(" ░██████████  ███░░███░░░███░    ░░░░░███  ███████    ░███ ░░███ ░███ ");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine(" ░███░░░░░░  ░███████   ░███      ███████ ░░░███░     ░███  ░███ ░███            Developed by Tiritatk");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(" ░███        ░███░░░    ░███ ███ ███░░███   ░███      ░███  ░███ ░███            Available in MultiTask by SergiXY_");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(" █████       ░░██████   ░░█████ ░░████████  █████     █████ ░░███████ ");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("░░░░░         ░░░░░░     ░░░░░   ░░░░░░░░  ░░░░░     ░░░░░   ░░░░░███            https://github.com/Tiritatk/petafly");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("                                                             ███ ░███ ");
-                Console.WriteLine("              Codename - Andorra Theme (Future Update?)     ░░██████  ");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("              Codename - Catalonia Theme (Future Update?)   ░░██████  ");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("                                                             ░░░░░░   ");
 
                 // Establecer color por defecto de la Consola
@@ -127,24 +121,9 @@ namespace PetaFlyApp
                 }
             }
         }
-        static void RunBatFile(string batFilePath)
-        {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo
-            {
-                FileName = batFilePath,
-                UseShellExecute = true,
-                CreateNoWindow = false
-            };
 
-            try
-            {
-                Process.Start(processStartInfo);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al ejecutar el archivo BAT: " + ex.Message);
-            }
-        }
+        static int lastPortUsed = 79; // Empezamos desde 79 para que el primer puerto sea 80
+
         static void CreateDirectoryForSharing()
         {
             string PetaflyBanner = " ███████████            █████                 ██████  ████            \n░░███░░░░░███          ░░███                 ███░░███░░███            \n ░███    ░███  ██████  ███████    ██████    ░███ ░░░  ░███  █████ ████\n ░██████████  ███░░███░░░███░    ░░░░░███  ███████    ░███ ░░███ ░███ \n ░███░░░░░░  ░███████   ░███      ███████ ░░░███░     ░███  ░███ ░███ \n ░███        ░███░░░    ░███ ███ ███░░███   ░███      ░███  ░███ ░███ \n █████       ░░██████   ░░█████ ░░████████  █████     █████ ░░███████ \n░░░░░         ░░░░░░     ░░░░░   ░░░░░░░░  ░░░░░     ░░░░░   ░░░░░███ \n                                                             ███ ░███ \n                                                            ░░██████  \n\n";
@@ -209,14 +188,16 @@ namespace PetaFlyApp
 
             if (startServer == "s")
             {
-                // Ejecutar el servidor Python en una nueva consola
-                StartPythonHttpServer(newDirectoryPath);
+                // Incrementar el puerto y lanzar el servidor HTTP
+                lastPortUsed++;
+                int port = lastPortUsed == 80 ? 80 : lastPortUsed;
+                StartPythonHttpServer(newDirectoryPath, port);
+
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("El servidor HTTP se ha abierto correctamente.");
+                Console.WriteLine($"El servidor HTTP se ha abierto correctamente en el puerto {port}.");
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.White;
-
             }
             else
             {
@@ -227,8 +208,6 @@ namespace PetaFlyApp
                 Console.ForegroundColor = ConsoleColor.White;
             }
         }
-
-        static int port = 80; // Puerto inicial
 
         static void OpenExistingHttpServer()
         {
@@ -249,7 +228,7 @@ namespace PetaFlyApp
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"{httpBanner}");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine() ;
+            Console.WriteLine();
             Console.WriteLine("Directorio(s) existente(s):");
             Console.WriteLine();
             for (int i = 0; i < directories.Length; i++)
@@ -265,6 +244,11 @@ namespace PetaFlyApp
             if (int.TryParse(Console.ReadLine(), out int selectedFolderIndex) && selectedFolderIndex > 0 && selectedFolderIndex <= directories.Length)
             {
                 string selectedFolderPath = directories[selectedFolderIndex - 1];
+
+                // Incrementar el puerto antes de lanzar el servidor
+                lastPortUsed++;
+                int port = lastPortUsed == 80 ? 80 : lastPortUsed;
+
                 StartPythonHttpServer(selectedFolderPath, port);
 
                 Console.Clear();
@@ -272,16 +256,6 @@ namespace PetaFlyApp
                 Console.WriteLine($"El servidor HTTP se ha abierto correctamente en el puerto {port}.");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine();
-
-                // Ajustar el puerto para el siguiente servidor
-                if (port == 80)
-                {
-                    port = 8000;
-                }
-                else
-                {
-                    port++;
-                }
             }
             else
             {
@@ -292,6 +266,7 @@ namespace PetaFlyApp
                 Console.ForegroundColor = ConsoleColor.White;
             }
         }
+
         static void StartPythonHttpServer(string folderPath, int port)
         {
             ProcessStartInfo psi = new ProcessStartInfo
