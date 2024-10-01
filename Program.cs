@@ -2,11 +2,23 @@ using Microsoft.VisualBasic;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PetaFlyApp
 {
     class Program
     {
+        class HttpServerInfo
+        {
+            public string DirectoryPath { get; set; }
+            public int Port { get; set; }
+            public Process HttpProcess { get; set; }
+            public bool NgrokActive { get; set; }
+        }
+
+        static List<HttpServerInfo> activeServers = new List<HttpServerInfo>();
+
         static void Main(string[] args)
         {
             string ReleaseDate = "October 2024";
@@ -68,14 +80,11 @@ namespace PetaFlyApp
                 Console.WriteLine("1. Crear nueva carpeta compartida");
                 Console.WriteLine("2. Abrir servidor HTTP en un directorio existente");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("3. Hacer Port Forwarding con Ngrok a un Servidor HTTP Abierto");
+                Console.WriteLine("3. Ajustes");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("4. Gestionar carpetas compartidas");
-                // BORRAR COMENTARIO: MOVER PUNTO 5 DENTRO DE 4. GESTIONAR CARPETAS COMPARTIDAS COMO UNA OPCION MAS
                 Console.WriteLine("5. Añadir archivo a carpeta existente");
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("6. Ajustes");
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("6. Gestionar servidores HTTP activos");
                 Console.WriteLine("7. Salir");
                 Console.WriteLine();
                 Console.Write("Selecciona una opción: ");
@@ -94,7 +103,7 @@ namespace PetaFlyApp
                         break;
                     case "3":
                         Console.Clear();
-                        NgrokPortForwarding();
+                        Settings();
                         break;
                     case "4":
                         Console.Clear();
@@ -106,7 +115,7 @@ namespace PetaFlyApp
                         break;
                     case "6":
                         Console.Clear();
-                        Settings();
+                        ManageHttpServers();
                         break;
                     case "7":
                         Console.Clear();
@@ -188,10 +197,8 @@ namespace PetaFlyApp
 
             if (startServer == "s")
             {
-                // Incrementar el puerto y lanzar el servidor HTTP
-                lastPortUsed++;
-                int port = lastPortUsed == 80 ? 80 : lastPortUsed;
-                StartPythonHttpServer(newDirectoryPath, port);
+                int port = GetRandomAvailablePort(); // Obtener un puerto aleatorio disponible
+                StartPythonHttpServer(newDirectoryPath, ref port);
 
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -199,21 +206,30 @@ namespace PetaFlyApp
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.White;
             }
-            else
-            {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine("El servidor HTTP no se ha iniciado. Puedes abrirlo más tarde desde el menú.");
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+
+
         }
+
+        static Random random = new Random();
+
+        static int GetRandomAvailablePort()
+        {
+            int port;
+            do
+            {
+                // Generar un puerto aleatorio entre 1024 y 65535 (puertos no reservados)
+                port = random.Next(1024, 65536);
+            } while (IsPortInUse(port)); // Verificar si el puerto está en uso
+
+            return port;
+        }
+
 
         static void OpenExistingHttpServer()
         {
             string httpBanner = " █████   █████ ███████████ ███████████ ███████████ \n░░███   ░░███ ░█░░░███░░░█░█░░░███░░░█░░███░░░░░███\n ░███    ░███ ░   ░███  ░ ░   ░███  ░  ░███    ░███\n ░███████████     ░███        ░███     ░██████████ \n ░███░░░░░███     ░███        ░███     ░███░░░░░░  \n ░███    ░███     ░███        ░███     ░███        \n █████   █████    █████       █████    █████       \n░░░░░   ░░░░░    ░░░░░       ░░░░░    ░░░░░        ";
             string rootDirectory = Path.Combine(Environment.CurrentDirectory, "dir");
-            string[] directories = Directory.GetDirectories(rootDirectory);
+            string[] directories = Directory.GetDirectories(rootDirectory); // Asegúrate de definir 'directories' aquí
 
             if (directories.Length == 0)
             {
@@ -245,11 +261,8 @@ namespace PetaFlyApp
             {
                 string selectedFolderPath = directories[selectedFolderIndex - 1];
 
-                // Incrementar el puerto antes de lanzar el servidor
-                lastPortUsed++;
-                int port = lastPortUsed == 80 ? 80 : lastPortUsed;
-
-                StartPythonHttpServer(selectedFolderPath, port);
+                int port = GetRandomAvailablePort(); // Obtener un puerto aleatorio disponible
+                StartPythonHttpServer(selectedFolderPath, ref port);
 
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -257,6 +270,7 @@ namespace PetaFlyApp
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine();
             }
+
             else
             {
                 Console.Clear();
@@ -267,8 +281,33 @@ namespace PetaFlyApp
             }
         }
 
-        static void StartPythonHttpServer(string folderPath, int port)
+        static bool IsPortInUse(int port)
         {
+            bool result = false;
+            TcpListener listener = null;
+            try
+            {
+                listener = new TcpListener(IPAddress.Any, port);
+                listener.Start();
+            }
+            catch (SocketException)
+            {
+                result = true; // El puerto está en uso
+            }
+            finally
+            {
+                listener?.Stop();
+            }
+            return result;
+        }
+
+        static void StartPythonHttpServer(string folderPath, ref int port)
+        {
+            while (IsPortInUse(port))
+            {
+                port++; // Incrementar el puerto hasta encontrar uno disponible
+            }
+
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = "python",
@@ -286,13 +325,78 @@ namespace PetaFlyApp
             };
 
             process.Start();
+
+            // Almacenar información del servidor en la lista
+            activeServers.Add(new HttpServerInfo
+            {
+                DirectoryPath = folderPath,
+                Port = port,
+                HttpProcess = process,
+                NgrokActive = false
+            });
+
+            Console.WriteLine($"Servidor HTTP abierto en '{folderPath}' en el puerto {port}.");
         }
 
-        static void NgrokPortForwarding()
+
+        static void ListActiveServers()
+        {
+            Console.WriteLine("--- Servidores HTTP Activos ---");
+            if (activeServers.Count == 0)
+            {
+                Console.WriteLine("No hay servidores HTTP abiertos actualmente.");
+                return;
+            }
+
+            foreach (var server in activeServers)
+            {
+                Console.WriteLine($"Directorio: {server.DirectoryPath}, Puerto: {server.Port}, Ngrok: {(server.NgrokActive ? "Activo" : "Inactivo")}");
+            }
+        }
+
+        static void ActivateNgrokForServer(int port)
+        {
+            var server = activeServers.FirstOrDefault(s => s.Port == port);
+            if (server == null)
+            {
+                Console.WriteLine($"No se encontró un servidor en el puerto {port}.");
+                return;
+            }
+
+            if (!server.NgrokActive)
+            {
+                StartNgrok(port); // Función que lanza ngrok
+                server.NgrokActive = true;
+                Console.WriteLine($"Ngrok activado en el puerto {port}.");
+            }
+            else
+            {
+                Console.WriteLine($"Ngrok ya está activo en el puerto {port}.");
+            }
+        }
+        static void CloseHttpServer(int port)
+        {
+            var server = activeServers.FirstOrDefault(s => s.Port == port);
+            if (server == null)
+            {
+                Console.WriteLine($"No se encontró un servidor en el puerto {port}.");
+                return;
+            }
+
+            // Cerrar el proceso HTTP
+            server.HttpProcess.Kill();
+            activeServers.Remove(server);
+
+            Console.WriteLine($"Servidor HTTP en el puerto {port} cerrado.");
+        }
+
+
+
+        static void Settings()
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Ngrok aun no esta disponible en Petafly, solo esta disponible la transferencia de archivos dentro de una misma wifi.");
+            Console.WriteLine("Settings aun no esta disponible en Petafly.");
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
@@ -418,35 +522,75 @@ namespace PetaFlyApp
                 AddFileToExistingFolder();
             }
         }
-        static void Settings()
+        static void ManageHttpServers()
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Los ajustes generales aún no estan disponibles en Petafly, solo esta disponible la gestion de carpetas compartidas");
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.White;
+            while (true)
+            {
+                Console.WriteLine("\n--- Gestión de Servidores HTTP ---");
+                Console.WriteLine("1. Listar servidores activos");
+                Console.WriteLine("2. Activar Ngrok en un servidor");
+                Console.WriteLine("3. Cerrar un servidor HTTP");
+                Console.WriteLine("4. Volver al menú principal");
+                Console.Write("Selecciona una opción: ");
+                string option = Console.ReadLine();
+
+                switch (option)
+                {
+                    case "1":
+                        ListActiveServers();
+                        break;
+                    case "2":
+                        Console.Write("Introduce el puerto del servidor para activar Ngrok: ");
+                        if (int.TryParse(Console.ReadLine(), out int ngrokPort))
+                        {
+                            ActivateNgrokForServer(ngrokPort);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Entrada no válida.");
+                        }
+                        break;
+                    case "3":
+                        Console.Write("Introduce el puerto del servidor que deseas cerrar: ");
+                        if (int.TryParse(Console.ReadLine(), out int closePort))
+                        {
+                            CloseHttpServer(closePort);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Entrada no válida.");
+                        }
+                        break;
+                    case "4":
+                        return; // Volver al menú principal
+                    default:
+                        Console.WriteLine("Opción no válida.");
+                        break;
+                }
+            }
         }
-        static void StartPythonHttpServer(string defaultPath)
+
+        static void StartNgrok(int port)
         {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = $"/K cd /d \"{defaultPath}\" && python -m http.server 80",
-                UseShellExecute = true,
-                CreateNoWindow = false
+                Arguments = $"/K ngrok http {port}", // Mantiene la ventana de CMD abierta
+                UseShellExecute = true,  // Permite abrir una nueva ventana de CMD
+                CreateNoWindow = false   // Muestra la ventana de CMD
             };
 
-            try
+            Process process = new Process
             {
-                Process.Start(processStartInfo);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al iniciar el servidor HTTP: " + ex.Message);
-            }
+                StartInfo = psi
+            };
+
+            process.Start();
+
+            Console.WriteLine($"Ngrok iniciado en el puerto {port}. La URL pública estará disponible en la ventana de ngrok.");
         }
 
-        static void ListFolders()
+    static void ListFolders()
         {
             string rootDirectory = Path.Combine(Environment.CurrentDirectory, "dir");
             Console.WriteLine();
