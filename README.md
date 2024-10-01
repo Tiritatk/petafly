@@ -59,3 +59,5 @@ Release Notes:
 - Fixed a major bug where you opened a HTTP Server (port 80 by default, and then 81, 82, 83...) Then when you closed and opened the program again, the ports were dead forever until you reboot your computer, and it was quite annoying because they were the first ports you used every time you run the program. Now you get a random port from 1024 to 65536.
 
 - Refactorized the code removing obsolete code.
+
+- New logo!
