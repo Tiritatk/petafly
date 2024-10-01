@@ -49,3 +49,13 @@ Release Notes:
       <dd><li type="disc">Removing installer MSI from releases, until further development.</li></dd>
       <dd><li type="disc">Deleted dependencies checker, it's not reliable because of program updating and for people who updates this every week is just not worth it, I will just put the dependencies download links here in the Installation tutorial of the README</li></dd>
       <dd><li type="disc">Fixed a bug where you could start a HTTP Server with port 80 (default http port) in the first option after creating a Sharable Folder, and then when opening a port for an existing folder in option 2, the server also started with port 80, instead of port 8000 or 81, breaking everything</li></dd>
+
+0.0.5:
+
+- Finally added ngrok, you can use it inside the option 6. You need to run ngrok here if you dont have it, and then make an account, get the authtoken and follow the setup, and now you will be able to port forward to any device around the world automatically!
+
+![image](https://github.com/user-attachments/assets/008f64fd-e274-4c8a-9819-8958af59aee8)
+
+- Fixed a major bug where you opened a HTTP Server (port 80 by default, and then 81, 82, 83...) Then when you closed and opened the program again, the ports were dead forever until you reboot your computer, and it was quite annoying because they were the first ports you used every time you run the program. Now you get a random port from 1024 to 65536.
+
+- Refactorized the code removing obsolete code.
