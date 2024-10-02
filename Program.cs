@@ -22,7 +22,7 @@ namespace PetaFlyApp
         static void Main(string[] args)
         {
             string ReleaseDate = "October 2024";
-            string ReleaseVersion = "0.0.4";
+            string ReleaseVersion = "0.0.5";
             string baseDir = AppDomain.CurrentDomain.BaseDirectory; // Ruta base del programa
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -35,27 +35,17 @@ namespace PetaFlyApp
             while (true)
             {
                 // Mostrar el menú principal
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine(" ███████████            █████                 ██████  ████            ");
-                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("░░███░░░░░███          ░░███                 ███░░███░░███            ");
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(" ░███    ░███  ██████  ███████    ██████    ░███ ░░░  ░███  █████ ████");
-                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine(" ░██████████  ███░░███░░░███░    ░░░░░███  ███████    ░███ ░░███ ░███ ");
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(" ░███░░░░░░  ░███████   ░███      ███████ ░░░███░     ░███  ░███ ░███            Developed by Tiritatk");
-                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine(" ░███        ░███░░░    ░███ ███ ███░░███   ░███      ░███  ░███ ░███            Available in MultiTask by SergiXY_");
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(" █████       ░░██████   ░░█████ ░░████████  █████     █████ ░░███████ ");
-                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("░░░░░         ░░░░░░     ░░░░░   ░░░░░░░░  ░░░░░     ░░░░░   ░░░░░███            https://github.com/Tiritatk/petafly");
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("                                                             ███ ░███ ");
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine("              Codename - Catalonia Theme (Future Update?)   ░░██████  ");
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("            Codename - Magenta Theme (Future Update?)       ░░██████  ");
                 Console.WriteLine("                                                             ░░░░░░   ");
 
                 // Establecer color por defecto de la Consola
@@ -130,8 +120,19 @@ namespace PetaFlyApp
                 }
             }
         }
-
-        static int lastPortUsed = 79; // Empezamos desde 79 para que el primer puerto sea 80
+        static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                // Devuelve la primera dirección IPv4
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No se pudo encontrar una dirección IP local.");
+        }
 
         static void CreateDirectoryForSharing()
         {
@@ -200,12 +201,14 @@ namespace PetaFlyApp
                 int port = GetRandomAvailablePort(); // Obtener un puerto aleatorio disponible
                 StartPythonHttpServer(newDirectoryPath, ref port);
 
+                string localIp = GetLocalIPAddress(); // Obtener la dirección IP local
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"El servidor HTTP se ha abierto correctamente en el puerto {port}.");
-                Console.WriteLine();
+                Console.WriteLine($"Accede a él en: http://{localIp}:{port}");
                 Console.ForegroundColor = ConsoleColor.White;
             }
+
 
 
         }
@@ -264,12 +267,15 @@ namespace PetaFlyApp
                 int port = GetRandomAvailablePort(); // Obtener un puerto aleatorio disponible
                 StartPythonHttpServer(selectedFolderPath, ref port);
 
+                string localIp = GetLocalIPAddress(); // Obtener la dirección IP local
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"El servidor HTTP se ha abierto correctamente en el puerto {port}.");
+                Console.WriteLine($"Accede a él en: http://{localIp}:{port}");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine();
             }
+
 
             else
             {
